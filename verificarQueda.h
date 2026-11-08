@@ -1,5 +1,9 @@
-#include <Adafruit_Sensor.h>
-#include <Adafruit_MPU6050.h>
+#ifndef VERIFICAR_QUEDA_H
+#define VERIFICAR_QUEDA_H
+
+#include "Adafruit_Sensor.h"
+#include <Arduino.h> // Necessário para coisas do Arduino como digitalWrite e abs()
+#include "Adafruit_MPU6050.h"
 
 bool quedapossivel = false;
 unsigned long timeincioqueda = 0, ultimoenvioSerial = 0;
@@ -37,3 +41,5 @@ void verificarQueda(sensors_event_t &a, sensors_event_t &g, unsigned long tempoa
         Serial.println("Bengala de volta ao normal, timer resetado");
         }  
     }
+
+#endif // VERIFICAR_QUEDA_H
