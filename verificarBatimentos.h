@@ -14,7 +14,6 @@ extern long Ultimabatida;
 extern float bpm;
 extern int bpm_medio;
 
-// FALTAVA ISTO: Declarar as variáveis do temporizador usadas no Serial.print
 extern unsigned long ultimoenvioSerial;
 extern const unsigned long intervaloSerial;
 
