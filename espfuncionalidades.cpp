@@ -138,4 +138,5 @@ void loop(){
         Serial.println("EIXO Z:");
         Serial.println(a.acceleration.z);
         Serial.println(g.gyro.z); 
+     }
 }
