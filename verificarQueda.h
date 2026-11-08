@@ -47,6 +47,6 @@ void verificarQueda(sensors_event_t &a, sensors_event_t &g, unsigned long tempoa
             Serial.println("Bengala de volta ao normal, timer resetado");
         }  
     }
-} // <--- AQUI ESTÁ A CHAVETA QUE FALTAVA PARA FECHAR A FUNÇÃO!
+}
 
 #endif // VERIFICAR_QUEDA_H
