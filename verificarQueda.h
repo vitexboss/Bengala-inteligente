@@ -2,44 +2,51 @@
 #define VERIFICAR_QUEDA_H
 
 #include "Adafruit_Sensor.h"
-#include <Arduino.h> // Necessário para coisas do Arduino como digitalWrite e abs()
+#include <Arduino.h> 
 #include "Adafruit_MPU6050.h"
 
-bool quedapossivel = false;
-unsigned long timeincioqueda = 0, ultimoenvioSerial = 0;
-const unsigned long timermaxqueda = 5000, intervaloSerial = 1000;
-const float limitegiro = 1.0;
+extern bool quedapossivel;
+extern unsigned long timeincioqueda;
+extern const unsigned long timermaxqueda;
+extern const float limitegiro;
 
-//Decidi criar uma função para a parte da queda em si
+// Proteção para o ficheiro reconhecer qual é o pino do buzzer
+#ifndef buzzer
+#define buzzer 4 // Lembre-se de mudar para 14 se for usar o NodeMCU (ESP12-E) fisicamente depois
+#endif
+
+// Função para a parte da queda em si
 void verificarQueda(sensors_event_t &a, sensors_event_t &g, unsigned long tempoatual){
-    //Passo 1: Calcular a rotação e verificar a pos! 
-    //Calcular a velocidade angular(rad/s) usando hipotenusa 3d
+    // Passo 1: Calcular a rotação e verificar a pos! 
+    // Calcular a velocidade angular(rad/s) usando hipotenusa 3d
     float giroTotal = sqrt(pow(g.gyro.x, 2) + pow(g.gyro.y, 2) + pow(g.gyro.z, 2));
-    //Deixar uma pos fixa para deitada;
-    bool dorminhoca = (abs(a.acceleration.y)< 1);
+    
+    // Deixar uma pos fixa para deitada;
+    bool dorminhoca = (abs(a.acceleration.y) < 1);
 
-    //Passo 2: Detectar se caiu e iniciar contagem caso TRUE;
+    // Passo 2: Detectar se caiu e iniciar contagem caso TRUE;
     if(giroTotal >= limitegiro && dorminhoca && !quedapossivel){ 
-        quedapossivel= true;
-        timeincioqueda=tempoatual;
+        quedapossivel = true;
+        timeincioqueda = tempoatual;
         Serial.println("Possivel Queda identificada, iniciando contagem regressiva...");
     }
     
-    //Passo 3: Enquanto ela estiver caída;
+    // Passo 3: Enquanto ela estiver caída;
     if(quedapossivel){
-        if(dorminhoca){//Continua caida?
+        if(dorminhoca){ // Continua caida?
             digitalWrite(buzzer, HIGH);
 
-             if(tempoatual-timeincioqueda>=timermaxqueda){
-            // Aqui sera para enviar para o bluetooth a queda
-            Serial.println("15s passados, enviando sinal");
+             if(tempoatual - timeincioqueda >= timermaxqueda){
+                // Aqui sera para enviar para o bluetooth a queda
+                Serial.println("15s passados, enviando sinal");
             }
-        }else{
-        //Bengala voltou para posição correta e reseta tudo!
-        quedapossivel=false;
-        digitalWrite(buzzer, LOW);
-        Serial.println("Bengala de volta ao normal, timer resetado");
+        } else {
+            // Bengala voltou para posição correta e reseta tudo!
+            quedapossivel = false;
+            digitalWrite(buzzer, LOW);
+            Serial.println("Bengala de volta ao normal, timer resetado");
         }  
     }
+} // <--- AQUI ESTÁ A CHAVETA QUE FALTAVA PARA FECHAR A FUNÇÃO!
 
 #endif // VERIFICAR_QUEDA_H
