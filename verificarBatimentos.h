@@ -1,14 +1,17 @@
-#include <spo2_algorithm.h>
-#include <heartRate.h>
-#include <MAX30105.h>
+#ifndef VERIFICAR_BATIMENTOS_H
+#define VERIFICAR_BATIMENTOS_H
 
+#include "MAX30105.h"
+#include "heartRate.h"
+#include <Arduino.h>
 //Para o maxsensor
-const byte leituras= 4; //Quantas leituras para fazer a média. -- Byte quarda valores de 0 a 255 positivos, ocupa menos espaço
-byte rates[leituras];//Vetor para guardar as últimas leituras
-byte organiza_rates=0;//Vai guarda a pos onde o rates[leituras] está para organização;
-long Ultimabatida=0;//Guarda a ultima batida do heart
-float bpm;
-int bpm_medio=0; //a media do batimento
+extern MAX30105 maxsensor;
+extern const byte leituras; //Quantas leituras para fazer a média. -- Byte quarda valores de 0 a 255 positivos, ocupa menos espaço
+extern byte rates[leituras];//Vetor para guardar as últimas leituras
+extern byte organiza_rates;//Vai guarda a pos onde o rates[leituras] está para organização;
+extern long Ultimabatida;//Guarda a ultima batida do heart
+extern float bpm;
+extern int bpm_medio; //a media do batimento
 
 
 //Outra função para os bpm's
@@ -53,3 +56,4 @@ void verificarBatimentos(unsigned long tempoatual){
             }
         }
 }
+#endif // VERIFICAR_BATIMENTOS_H
