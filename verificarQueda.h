@@ -12,7 +12,7 @@ extern const float limitegiro;
 
 // Proteção para o ficheiro reconhecer qual é o pino do buzzer
 #ifndef buzzer
-#define buzzer 4 // Lembre-se de mudar para 14 se for usar o NodeMCU (ESP12-E) fisicamente depois
+#define buzzer 4 //Que muda dependendo de onde ele vai estar
 #endif
 
 // Função para a parte da queda em si
