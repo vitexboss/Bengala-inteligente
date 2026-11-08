@@ -125,7 +125,7 @@ void loop(){
      if(tempoatual-ultimoenvioSerial>=intervaloSerial){
         ultimoenvioSerial=tempoatual;
         Serial.println("Leitura do infravermelho");
-        Serial.println(valorIR);
+        Serial.println( maxsensor.getIR());
         Serial.println("--------------------------------");
         Serial.println("EIXO X:");
         Serial.println(a.acceleration.x);
