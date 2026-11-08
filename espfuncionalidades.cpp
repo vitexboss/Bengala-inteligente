@@ -1,8 +1,12 @@
-#include <Adafruit_Sensor.h>
-#include <Adafruit_MPU6050.h>
-#include <spo2_algorithm.h>
-#include <heartRate.h>
-#include <MAX30105.h>
+#include <Wire.h>
+#include "BluetoothSerial.h"
+#include "Adafruit_MPU6050.h"
+#include "Adafruit_Sensor.h"
+#include "MAX30105.h"
+#include "heartRate.h"
+#include "verificarQueda.h"
+#include "verificarBatimentos.h"
+
 //LEMBRA DE DEIXAR EXATAMENTE NESSA ORDEM PELO AMOR DE DEUS
 
 
@@ -10,6 +14,10 @@
 #define I2C_SDA 4 //CONECTAR NO PINO D4
 #define I2C_SCL 5 //CONECTA NO PINO D1  
 #define buzzer 13 //PINO D7 --- esse se tu quiser trocar de pino evita apenas os pinos D3 e D8
+
+// Pinos para o Módulo Bluetooth Externo (HC-05 ou HC-06)
+#define BT_RX 12   // Pino D6 (Ligar ao TX do módulo HC-05)
+#define BT_TX 13   // Pino D7 (Ligar ao RX do módulo HC-05)
 
 Adafruit_MPU6050 mpu;
 MAX30105 maxsensor;
@@ -75,6 +83,28 @@ void setup(){
     maxsensor.setPulseAmplitudeIR(0x0A);//Define Led infravermelho 
 }
 
+void enviarDadosBluetooth() {
+    String json = "{";
+    
+    // 1. Frequência Cardíaca
+    json += "\"frequencia_cardiaca\": " + String(beatAvg) + ", ";
+    
+    // 2. Se a bengala caiu (sendo o último item, não leva vírgula no fim)
+    if (quedapossivel) {
+        json += "\"bengala_caiu\": true";
+    } else {
+        json += "\"bengala_caiu\": false";
+    }
+    
+    json += "}"; // Fecha o JSON
+
+    // Imprime no Monitor Serial para testar no simulador
+    Serial.println(json);
+    
+   
+    SerialBT.println(json);//O que vai para o site
+}
+
 void loop(){
     //Creating milis()
     unsigned long tempoatual = millis();
@@ -89,7 +119,12 @@ void loop(){
     
     //Checar a frequencia cardiaca:
     //verificarBatimentos(tempoatual)
-    
+
+    // Envia os dados (para USB e Bluetooth) a cada 1 segundo
+    if(tempoatual - ultimoenvioSerial >= intervaloSerial){
+        ultimoenvioSerial = tempoatual;
+        enviarDadosBluetooth();
+    }
     if(tempoatual-ultimoenvioSerial>=intervaloSerial){
         ultimoenvioSerial=tempoatual;
         Serial.println("Leitura do infravermelho");
